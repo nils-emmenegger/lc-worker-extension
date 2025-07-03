@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
 
-  "name": "Chrome Extension TypeScript Starter",
-  "description": "Chrome Extension, TypeScript, Visual Studio Code",
+  "name": "lc-worker Extension",
+  "description": "A Chrome Extension",
   "version": "1.0",
 
   "options_ui": {
@@ -10,26 +10,28 @@
   },
 
   "action": {
-    "default_icon": "icon.png",
+    "default_icon": {
+      "32": "icon.png"
+    },
     "default_popup": "popup.html"
   },
 
   "content_scripts": [
       {
-          "matches": ["<all_urls>"],
-          "js": ["js/vendor.js", "js/content_script.js"]
+          "matches": ["https://leetcode.com/*"],
+          "js": ["js/vendor.js", "js/content_script_main.js"],
+          "run_at": "document_start",
+          "world": "MAIN"
+      },
+      {
+        "matches": ["https://leetcode.com/*"],
+        "js": ["js/vendor.js", "js/content_script_isolated.js"],
+        "run_at": "document_start",
+        "world": "ISOLATED"
       }
   ],
 
-  "background": {
-    "service_worker": "js/background.js"
-  },
-
   "permissions": [
     "storage"
-  ],
-
-  "host_permissions": [
-    "<all_urls>"
   ]
 }

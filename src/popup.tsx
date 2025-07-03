@@ -1,50 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { Storage } from "./storage";
 
 const Popup = () => {
-  const [count, setCount] = useState(0);
-  const [currentURL, setCurrentURL] = useState<string>();
+  const [storage, setStorage] = useState<Storage>();
 
   useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
-
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      setCurrentURL(tabs[0].url);
+    chrome.storage.local.get().then((storage: Storage) => {
+      setStorage(storage);
     });
   }, []);
 
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555555",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
-  };
-
   return (
     <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
-        <li>Current Time: {new Date().toLocaleTimeString()}</li>
-      </ul>
-      <button
-        onClick={() => setCount(count + 1)}
-        style={{ marginRight: "5px" }}
-      >
-        count up
-      </button>
-      <button onClick={changeBackground}>change background</button>
+      <div style={{ display: "inline-block", whiteSpace: "nowrap" }}>
+        <div>
+          <a
+            href="https://lc-worker.nilsemmenegger.com/get_lc_daily_streak"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get streak
+          </a>
+        </div>
+        {storage === undefined ? (
+          <></>
+        ) : storage.streak === undefined || storage.timestamp === undefined ? (
+          <div>Streak not uploaded yet</div>
+        ) : (
+          <div>
+            Last uploaded streak {storage.streak} at{" "}
+            {new Date(storage.timestamp).toString()}
+          </div>
+        )}
+      </div>
     </>
   );
 };

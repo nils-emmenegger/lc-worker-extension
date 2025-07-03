@@ -7,8 +7,8 @@ module.exports = {
     entry: {
       popup: path.join(srcDir, 'popup.tsx'),
       options: path.join(srcDir, 'options.tsx'),
-      background: path.join(srcDir, 'background.ts'),
-      content_script: path.join(srcDir, 'content_script.tsx'),
+      content_script_main: path.join(srcDir, 'content_script_main.tsx'),
+      content_script_isolated: path.join(srcDir, 'content_script_isolated.tsx'),
     },
     output: {
         path: path.join(__dirname, "../dist/js"),
@@ -17,9 +17,7 @@ module.exports = {
     optimization: {
         splitChunks: {
             name: "vendor",
-            chunks(chunk) {
-              return chunk.name !== 'background';
-            }
+            chunks: "all",
         },
     },
     module: {
@@ -36,7 +34,16 @@ module.exports = {
     },
     plugins: [
         new CopyPlugin({
-            patterns: [{ from: ".", to: "../", context: "public" }],
+            patterns: [
+                {
+                    from: ".",
+                    globOptions: {
+                        ignore: ["**/icon.svg"],
+                    },
+                    to: "../",
+                    context: "public",
+                }
+            ],
             options: {},
         }),
     ],
